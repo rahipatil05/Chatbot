@@ -1,6 +1,6 @@
 (function() {
   const iframe = document.createElement('iframe');
-  iframe.src = "https://yourusername.github.io/chatbot/index.html"; // Replace later after upload
+  iframe.src = "https://rahipatil05.github.io/Chatbot/"; // Replace later after upload
   iframe.style.position = "fixed";
   iframe.style.bottom = "20px";
   iframe.style.right = "20px";
@@ -11,3 +11,4 @@
   iframe.style.zIndex = "9999";
   document.body.appendChild(iframe);
 })();
+

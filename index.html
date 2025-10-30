@@ -1,99 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Gemini Chatbot</title>
   <style>
-    body { background: #f3f3f3; margin: 0; font-family: 'Segoe UI', Arial, sans-serif; }
     #chatbot-box {
-      position: fixed; bottom: 20px; right: 20px;
-      width: 340px; height: 480px; background: #ffffff;
-      border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      display: flex; flex-direction: column; overflow: hidden;
-      border: 1px solid #ddd;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      height: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
     }
-    #chat-area { flex: 1; padding: 12px; overflow-y: auto; background: #f9fafb; }
-    #chat-area::-webkit-scrollbar { width: 6px; }
-    #chat-area::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
-    .message { margin: 8px 0; display: flex; }
-    .user { justify-content: flex-end; }
-    .bot { justify-content: flex-start; }
-    .bubble { max-width: 75%; padding: 10px 14px; border-radius: 14px; }
-    .user .bubble { background: #0078ff; color: #fff; }
-    .bot .bubble { background: #e4e6eb; color: #111; }
-    #input-area { border-top: 1px solid #ddd; display: flex; }
-    #user-input { flex: 1; border: none; padding: 12px; outline: none; }
-    #send-btn { background: #0078ff; border: none; color: white; padding: 12px 16px; cursor: pointer; }
+
+    #chat-area {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    #user-input {
+      border: none;
+      border-top: 1px solid #ccc;
+      padding: 10px;
+    }
   </style>
 </head>
 <body>
-
   <div id="chatbot-box">
     <div id="chat-area"></div>
-    <div id="input-area">
-      <input id="user-input" placeholder="Type a message..." autocomplete="off" />
-      <button id="send-btn">➤</button>
-    </div>
+    <input id="user-input" placeholder="Type a message..." />
   </div>
 
   <script>
     const chatArea = document.getElementById('chat-area');
     const input = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
 
-    // ⚠️ Use your regenerated key
-    const GEMINI_API_KEY = "AIzaSyAiwLUiGymECPnrWSiuQRTBm3cA5o8UfI0";
-
-    function appendMessage(sender, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.classList.add('message', sender);
-      msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
-      chatArea.appendChild(msgDiv);
-      chatArea.scrollTop = chatArea.scrollHeight;
-    }
-
-    async function getGeminiResponse(prompt) {
-      const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
-      const body = { contents: [{ parts: [{ text: prompt }] }] };
-
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
-
-        const data = await res.json();
-        console.log(data);
-
-        if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-          return data.candidates[0].content.parts[0].text;
-        } else {
-          return "⚠️ No valid response from Gemini. (Check key or model)";
-        }
-
-      } catch (err) {
-        console.error(err);
-        return "❌ Error connecting to Gemini API. Check console.";
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && input.value.trim() !== '') {
+        const msg = input.value;
+        chatArea.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+        input.value = '';
+        // Simple static bot reply
+        setTimeout(() => {
+          chatArea.innerHTML += `<div><b>Bot:</b> Hello! You said "${msg}"</div>`;
+        }, 500);
       }
-    }
-
-    async function handleUserInput() {
-      const msg = input.value.trim();
-      if (!msg) return;
-      appendMessage('user', msg);
-      input.value = '';
-      appendMessage('bot', '⏳ Thinking...');
-
-      const reply = await getGeminiResponse(msg);
-
-      const lastMsg = chatArea.querySelector('.bot:last-child .bubble');
-      if (lastMsg) lastMsg.textContent = reply;
-    }
-
-    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleUserInput(); });
-    sendBtn.addEventListener('click', handleUserInput);
+    });
   </script>
-
 </body>
 </html>
